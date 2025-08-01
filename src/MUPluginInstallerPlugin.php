@@ -206,7 +206,7 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
     {
         $name = $this->getPackageName($package);
 
-        $version = $package->getVersion();
+        $version = $package->getPrettyVersion();
         $content = file_get_contents($this->getEntrypointFilePath($package, $installer_path));
         $content = str_replace(':PLUGIN_VERSION:', $version, $content);
 
