@@ -1,0 +1,31 @@
+{
+    "name": "creode/mu-plugin-installer",
+    "description": "Facilitates WordPress MU-Plugin installation and separates them into different files.",
+    "type": "composer-plugin",
+    "autoload": {
+        "psr-4": {
+            "Creode\\MuPluginInstaller\\": "src/"
+        }
+    },
+    "extra": {
+        "class": "Creode\\MuPluginInstaller\\MUPluginInstallerPlugin"
+    },
+    "authors": [
+        {
+            "name": "Creode",
+            "email": "contact@creode.co.uk"
+        }
+    ],
+    "require": {
+        "composer-plugin-api": "^2.0",
+        "composer/installers": "^2.0"
+    },
+    "require-dev": {
+        "composer/composer": "^2.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    }
+}
