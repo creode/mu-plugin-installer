@@ -8,16 +8,6 @@ use Composer\Composer;
 class InstallerService
 {
     /**
-     * TODO: Make this a composer config option in future.
-     * List of supported package types.
-     *
-     * @var array
-     */
-    protected $supported_package_types = [
-        'wordpress-muplugin',
-    ];
-
-    /**
      * Constructor for the installer service.
      */
     public function __construct(protected Composer $composer)
@@ -33,6 +23,8 @@ class InstallerService
      */
     public function installMuPluginFile(PackageInterface $package, ?string $installer_path = null): void
     {
+		$installer_path = $installer_path ?? $this->getInstallerPath($package);
+
         $mu_plugin_path = $this->getMuPluginPath($package, $installer_path);
         $name = $this->getPackageName($package);
 
@@ -63,8 +55,6 @@ class InstallerService
 
         $mu_plugin_file_path = $mu_plugin_path . '/' . $name . '.php';
 
-        var_dump($mu_plugin_file_path);
-
         if (! file_exists($mu_plugin_file_path)) {
             return;
         }
@@ -81,7 +71,7 @@ class InstallerService
      * @param PackageInterface $package
      * @return string
      */
-    public function getPackageName(PackageInterface $package): string
+    private function getPackageName(PackageInterface $package): string
     {
         $prettyName = $package->getPrettyName();
 
