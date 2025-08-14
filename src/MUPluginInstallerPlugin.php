@@ -4,11 +4,10 @@ namespace Creode\MuPluginInstaller;
 
 use Composer\Composer;
 use Composer\IO\IOInterface;
-use Composer\EventDispatcher\EventSubscriberInterface;
-use Composer\Plugin\CommandEvent;
 use Composer\Plugin\PluginInterface;
-use Composer\Script\Event;
-use Creode\MuPluginInstaller\Installers\MuPluginInstaller;
+use Composer\Installer\PackageEvent;
+use Composer\Installer\PackageEvents;
+use Composer\EventDispatcher\EventSubscriberInterface;
 use Creode\MuPluginInstaller\Services\InstallerService;
 
 class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterface
@@ -37,43 +36,62 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
         // The installer will be automatically removed when the plugin is uninstalled
     }
 
-	public static function getSubscribedEvents()
-	{
-		return [
-			'post-autoload-dump' => [
-				['onPostPackageInstall', 0],
-			],
-		];
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            PackageEvents::PRE_PACKAGE_UPDATE => [
+                ['onPostPackageInstall', 0],
+            ],
+            PackageEvents::PRE_PACKAGE_UNINSTALL => [
+                ['onPostPackageUninstall', 0],
+            ]
+        ];
+    }
 
-	/**
-	 * Handle the installation of all wordpress-muplugin packages.
-	 *
-	 * @param Event $event
-	 * @return void
-	 */
-	public static function onPostPackageInstall(Event $event)
-	{
-		// Handle installation of all wordpress-muplugin packages.
-		$installer = new InstallerService($event->getComposer());
+    /**
+     * Handle the installation of all wordpress-muplugin packages.
+     *
+     * @param Event $event
+     * @return void
+     */
+    public static function onPostPackageInstall(PackageEvent $event)
+    {
+        var_dump('Post package install ran...');
+        // Handle installation of all wordpress-muplugin packages.
+        $installer = new InstallerService($event->getComposer());
 
-		foreach (self::getAllPackages($event->getComposer()) as $package) {
-			if ($package->getType() !== 'wordpress-muplugin') {
-				continue;
-			}
+        $package = $event->getComposer()->getPackage();
 
-			$installer->installMuPluginFile($package);
-		}
-	}
+        if ($package->getType() !== 'wordpress-muplugin') {
+            return;
+        }
 
-	/**
-	 * Get all packages from the local repository.
-	 *
-	 * @param Composer $composer
-	 * @return array
-	 */
-	public static function getAllPackages(Composer $composer)
-	{
-		return $composer->getRepositoryManager()->getLocalRepository()->getPackages();
-	}
+        var_dump($package->getName());
+
+        $installer->installMuPluginFile($package);
+    }
+
+    /**
+     * Handle the uninstallation of all wordpress-muplugin packages.
+     *
+     * @param PackageEvent $event
+     * @return void
+     */
+    public static function onPostPackageUninstall(PackageEvent $event)
+    {
+        $installer = new InstallerService($event->getComposer());
+
+        $package = $event->getComposer()->getPackage();
+
+        if ($package->getType() !== 'wordpress-muplugin') {
+            return;
+        }
+
+        var_dump($package->getName());
+
+        $installer->deleteMuPluginFile($package);
+    }
 }

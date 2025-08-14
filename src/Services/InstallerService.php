@@ -35,9 +35,6 @@ class InstallerService
     {
 		$installer_path = $installer_path ?? $this->getInstallerPath($package);
 
-		var_dump($installer_path);
-		die;
-
         $mu_plugin_path = $this->getMuPluginPath($package, $installer_path);
         $name = $this->getPackageName($package);
 
