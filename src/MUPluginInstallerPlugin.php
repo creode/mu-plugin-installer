@@ -59,7 +59,6 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
      */
     public static function onPostPackageInstall(PackageEvent $event)
     {
-        var_dump('Post package install ran...');
         // Handle installation of all wordpress-muplugin packages.
         $installer = new InstallerService($event->getComposer());
 
@@ -69,7 +68,7 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
             return;
         }
 
-        var_dump($package->getName());
+        var_dump('Post package install ran for package: ' . $package->getName());
 
         $installer->installMuPluginFile($package);
     }
@@ -86,11 +85,13 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
 
         $package = $event->getComposer()->getPackage();
 
+        var_dump($package->getName());
+
         if ($package->getType() !== 'wordpress-muplugin') {
             return;
         }
 
-        var_dump($package->getName());
+        var_dump('Post package uninstall ran for package: ' . $package->getName());
 
         $installer->deleteMuPluginFile($package);
     }

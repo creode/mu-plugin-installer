@@ -65,8 +65,6 @@ class InstallerService
 
         $mu_plugin_file_path = $mu_plugin_path . '/' . $name . '.php';
 
-        var_dump($mu_plugin_file_path);
-
         if (! file_exists($mu_plugin_file_path)) {
             return;
         }
