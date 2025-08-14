@@ -4,9 +4,10 @@ namespace Creode\MuPluginInstaller;
 
 use Composer\Composer;
 use Composer\IO\IOInterface;
-use Composer\Plugin\PluginInterface;
 use Composer\Installer\PackageEvent;
+use Composer\Plugin\PluginInterface;
 use Composer\Installer\PackageEvents;
+use Composer\Package\PackageInterface;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Creode\MuPluginInstaller\Services\InstallerService;
 
@@ -57,7 +58,7 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
     /**
      * Handle the installation of all wordpress-muplugin packages.
      *
-     * @param Event $event
+     * @param PackageEvent $event
      * @return void
      */
     public static function onPostPackageInstall(PackageEvent $event)
@@ -65,7 +66,7 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
         // Handle installation of all wordpress-muplugin packages.
         $installer = new InstallerService($event->getComposer());
 
-        $package = $event->getComposer()->getPackage();
+        $package = self::getPackage($event);
 
         var_dump($package->getName());
         var_dump($package->getType());
@@ -89,7 +90,7 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
     {
         $installer = new InstallerService($event->getComposer());
 
-        $package = $event->getComposer()->getPackage();
+        $package = self::getPackage($event);
 
         var_dump($package->getName());
         var_dump($package->getType());
@@ -101,5 +102,23 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
         var_dump('Post package uninstall ran for package: ' . $package->getName());
 
         $installer->deleteMuPluginFile($package);
+    }
+
+    /**
+     * Gets a package from a package event.
+     *
+     * @param PackageEvent $event
+     * @return PackageInterface
+     */
+    public static function getPackage(PackageEvent $event): PackageInterface
+    {
+        /** @var InstallOperation|UpdateOperation $operation */
+        $operation = $event->getOperation();
+
+        $package = method_exists($operation, 'getPackage')
+            ? $operation->getPackage()
+            : $operation->getInitialPackage();
+
+        return $package;
     }
 }
