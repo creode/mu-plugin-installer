@@ -68,14 +68,11 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
 
         $package = self::getPackage($event);
 
-        var_dump($package->getName());
-        var_dump($package->getType());
-
-        if ($package->getType() !== 'wordpress-muplugin') {
+        if ($package === null) {
             return;
         }
 
-        var_dump('Post package install ran for package: ' . $package->getName());
+        $event->getIO()->write('Installing mu plugin file for package: ' . $package->getName());
 
         $installer->installMuPluginFile($package);
     }
@@ -92,14 +89,11 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
 
         $package = self::getPackage($event);
 
-        var_dump($package->getName());
-        var_dump($package->getType());
-
-        if ($package->getType() !== 'wordpress-muplugin') {
+        if ($package === null) {
             return;
         }
 
-        var_dump('Post package uninstall ran for package: ' . $package->getName());
+        $event->getIO()->write('Removing mu plugin file for package: ' . $package->getName());
 
         $installer->deleteMuPluginFile($package);
     }
@@ -108,9 +102,9 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
      * Gets a package from a package event.
      *
      * @param PackageEvent $event
-     * @return PackageInterface
+     * @return PackageInterface|null
      */
-    public static function getPackage(PackageEvent $event): PackageInterface
+    public static function getPackage(PackageEvent $event): ?PackageInterface
     {
         /** @var InstallOperation|UpdateOperation $operation */
         $operation = $event->getOperation();
@@ -118,6 +112,10 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
         $package = method_exists($operation, 'getPackage')
             ? $operation->getPackage()
             : $operation->getInitialPackage();
+
+        if ($package->getType() !== 'wordpress-muplugin') {
+            return null;
+        }
 
         return $package;
     }
