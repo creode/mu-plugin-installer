@@ -42,6 +42,9 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
     public static function getSubscribedEvents()
     {
         return [
+            PackageEvents::PRE_PACKAGE_INSTALL => [
+                ['onPostPackageInstall', 0],
+            ],
             PackageEvents::PRE_PACKAGE_UPDATE => [
                 ['onPostPackageInstall', 0],
             ],
