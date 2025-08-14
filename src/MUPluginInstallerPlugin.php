@@ -67,6 +67,9 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
 
         $package = $event->getComposer()->getPackage();
 
+        var_dump($package->getName());
+        var_dump($package->getType());
+
         if ($package->getType() !== 'wordpress-muplugin') {
             return;
         }
@@ -89,6 +92,7 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
         $package = $event->getComposer()->getPackage();
 
         var_dump($package->getName());
+        var_dump($package->getType());
 
         if ($package->getType() !== 'wordpress-muplugin') {
             return;
