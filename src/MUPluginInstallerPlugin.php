@@ -101,17 +101,19 @@ class MUPluginInstallerPlugin implements PluginInterface, EventSubscriberInterfa
     /**
      * Gets a package from a package event.
      *
+     * Update operations expose the new package via getTargetPackage(); using
+     * getInitialPackage() would stamp the entrypoint with the previous version.
+     *
      * @param PackageEvent $event
      * @return PackageInterface|null
      */
     public static function getPackage(PackageEvent $event): ?PackageInterface
     {
-        /** @var InstallOperation|UpdateOperation $operation */
         $operation = $event->getOperation();
 
-        $package = method_exists($operation, 'getPackage')
-            ? $operation->getPackage()
-            : $operation->getInitialPackage();
+        $package = method_exists($operation, 'getTargetPackage')
+            ? $operation->getTargetPackage()
+            : $operation->getPackage();
 
         if ($package->getType() !== 'wordpress-muplugin') {
             return null;
